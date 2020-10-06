@@ -7,6 +7,17 @@
         },
         "rgLocation": {
             "value": "uksouth"
-        }
+        },
+        "rgName2":{
+            "value": "infra-core-prd-rg"
+        },
+        "rgName3":{
+            "value": "infra-rds-prd-rg"
+
+        }   
+
+
+
+        
         }
 }

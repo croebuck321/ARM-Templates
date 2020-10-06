@@ -7,8 +7,14 @@
         },
         "rgLocation": {
             "type": "string"
-        }
-        
+        },
+        "rgName1": {
+            "type": "string"
+        },
+        "rgName2": {
+            "type": "string"
+
+        }        
     },
     "variables": {},
     "resources": [
@@ -17,6 +23,20 @@
             "apiVersion": "2018-05-01",
             "location": "[parameters('rgLocation')]",
             "name": "[parameters('rgName')]",
+            "properties": {}
+                    },
+                    {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "[parameters('rgLocation')]",
+            "name": "[parameters('rgName1')]",
+            "properties": {}
+                    },
+                    {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "[parameters('rgLocation')]",
+            "name": "[parameters('rgName2')]",
             "properties": {}
                     }
     ],
