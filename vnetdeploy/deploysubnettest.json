@@ -9,7 +9,7 @@
             "name": "prd-vnet",
             "type": "Microsoft.Network/VirtualNetworks",
             "apiVersion": "2019-09-01",
-            "location": "uksouth",
+            "location": "uk south",
             "dependsOn": [],
             "tags": {},
             "properties": {
