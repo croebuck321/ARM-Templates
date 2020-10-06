@@ -8,10 +8,10 @@
         "rgLocation": {
             "value": "uksouth"
         },
-        "rgName2":{
+        "rgName1":{
             "value": "infra-core-prd-rg"
         },
-        "rgName3":{
+        "rgName2":{
             "value": "infra-rds-prd-rg"
 
         }   

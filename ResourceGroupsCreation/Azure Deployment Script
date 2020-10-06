@@ -1,0 +1,4 @@
+$ParamsURI = "https://raw.githubusercontent.com/croebuck321/ARM-Templates/master/ResourceGroupsCreation/Resource%20Groups%20Perams.json"
+$TemplateURI = "https%3A%2F%2Fraw.githubusercontent.com%2Fcroebuck321%2FARM-Templates%2Fmaster%2FResourceGroupsCreation%2FResource%2520Groups.json"
+New-AzResourceGroup -Name devops-deploy -Location "UK South"
+New-azresourcegroupdeployment -ResourceGroupName devops-deploy -TemplateParameterURI $ParamsURI -TemplateURI $TemplateURI
