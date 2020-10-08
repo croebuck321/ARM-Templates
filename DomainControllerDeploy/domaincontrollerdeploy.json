@@ -13,11 +13,14 @@
             "type": "string",
             "metadata": {
                 "description": "Name of the VM, should follow *Customer*-AZR-DC0X"
-            }
-        },
-        "virtualMachineRG": {
-            "type": "string",
-            "defaultValue": "infra-core-prd-rg"
+            },
+
+        "virtualNetworkResourceGroup": {
+        "type": "string",
+        "defaultValue": "net-core-prd-rg",
+        "metadata": {
+          "description": "Resource Group VNET is deployed in"
+        }
         },
         "osDiskType": {
             "type": "string",
@@ -28,6 +31,9 @@
         },
         "virtualMachineSize": {
             "type": "string",
+            "allowedValues" :[
+                "Standard_B1s"                
+            ],
             "metadata": {
         "description": "Size of the VM"
             }
@@ -48,8 +54,10 @@
         }       
     },
     "variables": {
+        "subnet": "core-subnet",
+        "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
-        "subnetRef": "core-subnet",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('subnet'))]",
         "nicName": "[concat(parameters('virtualMachineName'), '-NIC')]",
         "publicIPName": "[concat(parameters('virtualMachineName'), '-PIP')]",
         "networkSecurityGroupName": "[concat(parameters('virtualMachineName'), '-NSG')]"  
@@ -58,7 +66,7 @@
         {
             "name": "[variables('nicName')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2018-10-01",
+            "apiVersion": "2020-06-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
@@ -125,9 +133,8 @@
             "apiVersion": "2020-06-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "managedDiskResources",
                 "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-            ],
+                    ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('virtualMachineSize')]"
