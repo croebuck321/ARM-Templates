@@ -13,14 +13,8 @@
             "type": "string",
             "metadata": {
                 "description": "Name of the VM, should follow *Customer*-AZR-DC0X"
-            },
-
-        "virtualNetworkResourceGroup": {
-        "type": "string",
-        "defaultValue": "net-core-prd-rg",
-        "metadata": {
-          "description": "Resource Group VNET is deployed in"
-        }
+            }
+            
         },
         "osDiskType": {
             "type": "string",
@@ -55,7 +49,9 @@
     },
     "variables": {
         "subnet": "core-subnet",
-        "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "virtualNetworkName": "prd-vnet",
+        "virtualNetworkResourceGroup":"net-core-prd-rg",
+        "vnetID": "[resourceId(variables('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/', variables('subnet'))]",
         "nicName": "[concat(parameters('virtualMachineName'), '-NIC')]",
