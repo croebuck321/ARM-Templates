@@ -9,17 +9,11 @@
         "description": "Location for all resources."
       }
         },
-        "networkSecurityGroupRules": {
-            "type": "array"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "virtualNetworkId": {
-            "type": "string"
-        },
         "virtualMachineName": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "Name of the VM, should follow *Customer*-AZR-DC0X"
+            }
         },
         "virtualMachineRG": {
             "type": "string",
@@ -27,16 +21,16 @@
         },
         "osDiskType": {
             "type": "string",
-            "defaultValue": "StandardSSD_LRS"
-        },
-        "dataDisks": {
-            "type": "array"
-        },
-        "dataDiskResources": {
-            "type": "array"
+            "defaultValue": "StandardSSD_LRS",
+            "metadata": {
+                "description": "Should remain Standard SSD unless requirements for Premium Disks"
+            }
         },
         "virtualMachineSize": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+        "description": "Size of the VM"
+            }
         },
         "adminUsername": {
             "type": "string",
@@ -51,18 +45,11 @@
             "metadata": {
         "description": "Password for the Virtual Machine."
       }
-        },
-        "patchMode": {
-            "type": "string"
-        },
-        "zone": {
-            "type": "string"
-        }
+        }       
     },
     "variables": {
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
-        "vnetId": "[parameters('virtualNetworkId')]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "subnetRef": "core-subnet",
         "nicName": "[concat(parameters('virtualMachineName'), '-NIC')]",
         "publicIPName": "[concat(parameters('virtualMachineName'), '-PIP')]",
         "networkSecurityGroupName": "[concat(parameters('virtualMachineName'), '-NSG')]"  
@@ -103,7 +90,21 @@
             "apiVersion": "2019-02-01",
             "location": "[parameters('location')]",
             "properties": {
-                "securityRules": "[parameters('networkSecurityGroupRules')]"
+                "securityRules": [
+          {
+            "name": "default-allow-3389",
+            "properties": {
+              "priority": 1000,
+              "access": "Allow",
+              "direction": "Inbound",
+              "destinationPortRange": "3389",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "82.152.48.254",
+              "destinationAddressPrefix": "*"
+            }
+          }
+        ]
             }
         },
         {
@@ -116,27 +117,7 @@
             },
             "sku": {
                 "name": "Standard"
-            },
-            "zones": [
-                "[parameters('zone')]"
-            ]
-        },
-        {
-            "name": "[parameters('dataDiskResources')[copyIndex()].name]",
-            "type": "Microsoft.Compute/disks",
-            "apiVersion": "2020-05-01",
-            "location": "[parameters('location')]",
-            "properties": "[parameters('dataDiskResources')[copyIndex()].properties]",
-            "sku": {
-                "name": "[parameters('dataDiskResources')[copyIndex()].sku]"
-            },
-            "copy": {
-                "name": "managedDiskResources",
-                "count": "[length(parameters('dataDiskResources'))]"
-            },
-            "zones": [
-                "[parameters('zone')]"
-            ]
+            }        
         },
         {
             "name": "[parameters('virtualMachineName')]",
@@ -145,7 +126,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "managedDiskResources",
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -163,30 +144,12 @@
                         "offer": "WindowsServer",
                         "sku": "2019-Datacenter",
                         "version": "latest"
-                    },
-                    "copy": [
-                        {
-                            "name": "dataDisks",
-                            "count": "[length(parameters('dataDisks'))]",
-                            "input": {
-                                "lun": "[parameters('dataDisks')[copyIndex('dataDisks')].lun]",
-                                "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
-                                "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
-                                "writeAcceleratorEnabled": "[parameters('dataDisks')[copyIndex('dataDisks')].writeAcceleratorEnabled]",
-                                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
-                                "managedDisk": {
-                                    "id": "[coalesce(parameters('dataDisks')[copyIndex('dataDisks')].id, if(equals(parameters('dataDisks')[copyIndex('dataDisks')].name, json('null')), json('null'), resourceId('Microsoft.Compute/disks', parameters('dataDisks')[copyIndex('dataDisks')].name)))]",
-                                    "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].storageAccountType]",
-                                    "diskEncryptionSet": "[parameters('dataDisks')[copyIndex('dataDisks')].diskEncryptionSet]"
-                                }
-                            }
-                        }
-                    ]
+                    }            
                 },
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
                         }
                     ]
                 },
@@ -196,10 +159,7 @@
                     "adminPassword": "[parameters('adminPassword')]",
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": true,
-                        "provisionVmAgent": true,
-                        "patchSettings": {
-                            "patchMode": "[parameters('patchMode')]"
-                        }
+                        "provisionVmAgent": true
                     }
 
                 },
@@ -208,10 +168,7 @@
                         "enabled": true
                     }
                 }
-            },
-            "zones": [
-                "[parameters('zone')]"
-            ]
+            }
         }
     ],
     "outputs": {
