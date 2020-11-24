@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
            "virtualMachineName": {
@@ -19,7 +19,8 @@
         "virtualMachineSize": {
             "type": "string",
             "allowedValues" :[
-                "Standard_B1s"                
+                "Standard_B1s",
+                "Standard_D2_v2"                
             ],
             "metadata": {
         "description": "Size of the VM"
