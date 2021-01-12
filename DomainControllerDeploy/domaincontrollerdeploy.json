@@ -20,7 +20,10 @@
             "type": "string",
             "allowedValues" :[
                 "Standard_B1s",
-                "Standard_D2_v2"                
+                "Standard_D2_v2",
+                "Standard_B4ms",
+                "Standard_D4_v3",
+                "Standard_B8ms"               
             ],
             "metadata": {
         "description": "Size of the VM"
